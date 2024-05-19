@@ -1,54 +1,51 @@
-import { PublicApi } from "@react-three/cannon";
-import { useEffect } from "react";
-import { Vector3 } from "three";
+import { useCallback, useEffect, useState } from "react";
 
-export function useControls(api: PublicApi): void {
+const actionbyKey = {
+  KeyW: "moveForward",
+  KeyS: "moveBackward",
+  KeyD: "moveRight",
+  KeyA: "moveLeft",
+  Space: "jump",
+  Digit1: "texture1",
+  Digit2: "texture2",
+  Digit3: "texture3",
+  Digit4: "texture4",
+  Digit5: "texture5",
+};
+
+export const useKeyboard = () => {
+  const [actions, setActions] = useState({
+    moveForward: false,
+    moveBackward: false,
+    moveLeft: false,
+    moveRight: false,
+    jump: false,
+    texture1: false,
+    texture2: false,
+    texture3: false,
+    texture4: false,
+    texture5: false,
+  });
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const action = actionbyKey[e.code as keyof typeof actionbyKey];
+    if (!action) return;
+    setActions((prev) => ({
+      ...prev,
+      [action]: true,
+    }));
+  }, []);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    const action = actionbyKey[e.code as keyof typeof actionbyKey];
+    if (!action) return;
+    setActions((prev) => ({
+      ...prev,
+      [action]: false,
+    }));
+  }, []);
+
   useEffect(() => {
-    const keys: string[] = [];
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const { key, shiftKey } = e;
-      const speed = shiftKey ? 0.5 : 1;
-
-      const pressedKey = key.toLowerCase();
-
-      if (!keys.includes(pressedKey) && pressedKey !== "shift") {
-        keys.push(pressedKey);
-      }
-
-      for (const key of keys) {
-        const vector = new Vector3();
-
-        switch (key.toLowerCase()) {
-          case "w":
-            vector.z -= speed;
-            break;
-          case "a":
-            vector.x -= speed;
-            break;
-          case "s":
-            vector.z += speed;
-            break;
-          case "d":
-            vector.x += speed;
-            break;
-        }
-
-        api.velocity.set(vector.x, vector.y, vector.z);
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      const { key } = e;
-
-      const releasedKey = key.toLowerCase();
-      const index = keys.indexOf(releasedKey);
-
-      if (index !== -1) {
-        keys.splice(index, 1);
-      }
-    };
-
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
@@ -56,5 +53,7 @@ export function useControls(api: PublicApi): void {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [api]);
-}
+  }, []);
+
+  return actions;
+};
