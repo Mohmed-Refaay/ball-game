@@ -5,6 +5,8 @@ import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { OrbitControls as OB } from "three-stdlib";
+import App from "next/app";
+import { useGameStore } from "@/stores/gameStore";
 
 const direction = new Vector3();
 
@@ -22,6 +24,9 @@ const CAMERA_LERP = 0.1;
 export function Player() {
   const actions = useKeyboard();
   const controls = useRef<OB>(null);
+  const [setPause, isPaused, isReset, removeReset] = useGameStore(
+    (d) => [d.pause, d.isPaused, d.isReset, d.startOver],
+  );
 
   const args: JSX.IntrinsicElements["sphereGeometry"]["args"] = [
     1, 64, 64,
@@ -110,6 +115,19 @@ export function Player() {
         JUMP_VELOCITY,
         velocity.current[2],
       );
+    }
+
+    if (isPaused) {
+      api.velocity.set(0, 0, 0);
+    }
+
+    if (position.current[1] < -5) {
+      setPause();
+    }
+
+    if (isReset) {
+      api.position.set(0, 5, 0);
+      removeReset();
     }
   });
 

@@ -1,5 +1,5 @@
 "use client";
-import { Center, Text3D, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Player } from "./Player";
 import { Physics, Triplet } from "@react-three/cannon";
