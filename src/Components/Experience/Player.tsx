@@ -119,7 +119,7 @@ export function Player() {
         <sphereGeometry args={args} />
         <meshStandardMaterial color="red" />
       </mesh>
-      <OrbitControls ref={controls} />
+      <OrbitControls ref={controls} enableZoom={false} />
     </>
   );
 }
