@@ -1,31 +1,23 @@
 import { create } from "zustand";
 
+export enum GameModes {
+  FAILED = "FAILED",
+  WIN = "WIN",
+  PAUSED = "PAUSED",
+  RESET = "RESET",
+  PLAYING = "PLAYING",
+}
+
 interface GameStore {
-  isFailed: boolean;
-  isWin: boolean;
-  isPaused: boolean;
-  isReset: boolean;
-  setFailed: () => void;
-  setWin: () => void;
-  resetGame: () => void;
-  pause: () => void;
-  startOver: () => void;
+  mode: GameModes;
+  setMode: (mode: GameModes) => void;
+  endGoal: [number, number, number];
+  setEndGoal: (endGoal: [number, number, number]) => void;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
-  isFailed: false,
-  isWin: false,
-  isPaused: false,
-  isReset: false,
-  setFailed: () => set({ isFailed: true }),
-  setWin: () => set({ isWin: true }),
-  resetGame: () =>
-    set({
-      isFailed: false,
-      isWin: false,
-      isReset: true,
-      isPaused: false,
-    }),
-  startOver: () => set({ isReset: false, isPaused: false }),
-  pause: () => set({ isPaused: true }),
+  mode: GameModes.PLAYING,
+  setMode: (mode) => set({ mode }),
+  endGoal: [0, 0, 0],
+  setEndGoal: (endGoal) => set({ endGoal }),
 }));

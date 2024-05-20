@@ -1,21 +1,22 @@
 "use client";
 
 import { Experience } from "@/Components/Experience";
-import { useGameStore } from "@/stores/gameStore";
+import { GameModes, useGameStore } from "@/stores/gameStore";
 import Image from "next/image";
 
 export default function Home() {
-  const [resetGame, isPaused, isWin] = useGameStore((d) => [
-    d.resetGame,
-    d.isPaused,
-    d.isWin,
-  ]);
+  const [mode, setMode] = useGameStore((d) => [d.mode, d.setMode]);
+
+  const resetGame = () => {
+    setMode(GameModes.RESET);
+  };
+
   return (
     <main className="w-screen h-screen bg-slate-900">
       <Experience />
 
-      {isPaused && (
-        <Window
+      {mode === GameModes.PAUSED && (
+        <ResultWindow
           key="pause"
           image="/man_up.jpeg"
           actions={[
@@ -27,8 +28,8 @@ export default function Home() {
         />
       )}
 
-      {isWin && (
-        <Window
+      {mode === GameModes.WIN && (
+        <ResultWindow
           key="win"
           image="/my_man.jpeg"
           actions={[
@@ -43,7 +44,7 @@ export default function Home() {
   );
 }
 
-function Window({
+function ResultWindow({
   actions,
   image,
 }: {

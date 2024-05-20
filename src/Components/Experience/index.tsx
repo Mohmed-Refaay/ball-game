@@ -6,19 +6,11 @@ import { Physics, Triplet } from "@react-three/cannon";
 import { Ground } from "./Ground";
 import { useMemo } from "react";
 import { Mesh } from "three";
-
-const GROUNDS = [
-  { size: 5, position: [0, 0, 0] },
-  { size: 5, position: [0, 0, 5] },
-  { size: 5, position: [0, 2, 10] },
-  { size: 5, position: [0, 0, -5] },
-  { size: 5, position: [5, 0, 0] },
-  { size: 5, position: [5, 0, 0] },
-  { size: 5, position: [-5, 0, 0] },
-];
+import { useGameStore } from "@/stores/gameStore";
 
 export function Experience() {
   const d = useGLTF("/models/level1.glb");
+  const setEndGoal = useGameStore((d) => d.setEndGoal);
 
   const data = useMemo(() => {
     const grounds: THREE.Mesh[] = [];
@@ -28,6 +20,13 @@ export function Experience() {
         child.name.toLowerCase().includes("plane") ||
         child.name.toLowerCase().includes("end")
       ) {
+        if (child.name.toLowerCase().includes("end")) {
+          setEndGoal([
+            child.position.x,
+            child.position.y,
+            child.position.z,
+          ]);
+        }
         if (child instanceof Mesh) {
           grounds.push(child);
         }
@@ -35,7 +34,7 @@ export function Experience() {
     });
 
     return grounds;
-  }, [d]);
+  }, [d, setEndGoal]);
 
   return (
     <Canvas>

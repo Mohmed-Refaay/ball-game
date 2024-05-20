@@ -6,7 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { OrbitControls as OB } from "three-stdlib";
 import App from "next/app";
-import { useGameStore } from "@/stores/gameStore";
+import { GameModes, useGameStore } from "@/stores/gameStore";
 
 const direction = new Vector3();
 
@@ -24,9 +24,11 @@ const CAMERA_LERP = 0.1;
 export function Player() {
   const actions = useKeyboard();
   const controls = useRef<OB>(null);
-  const [setPause, isPaused, isReset, removeReset] = useGameStore(
-    (d) => [d.pause, d.isPaused, d.isReset, d.startOver],
-  );
+  const [gameMode, setMode, endGoal] = useGameStore((d) => [
+    d.mode,
+    d.setMode,
+    d.endGoal,
+  ]);
 
   const args: JSX.IntrinsicElements["sphereGeometry"]["args"] = [
     1, 64, 64,
@@ -117,17 +119,30 @@ export function Player() {
       );
     }
 
-    if (isPaused) {
+    if (gameMode === GameModes.PAUSED) {
       api.velocity.set(0, 0, 0);
     }
 
     if (position.current[1] < -5) {
-      setPause();
+      setMode(GameModes.PAUSED);
     }
 
-    if (isReset) {
+    if (gameMode === GameModes.RESET) {
       api.position.set(0, 5, 0);
-      removeReset();
+      setTimeout(() => {
+        setMode(GameModes.PLAYING);
+      }, 100);
+    }
+
+    if (
+      new Vector3(
+        position.current[0],
+        position.current[1],
+        position.current[2],
+      ).distanceTo(new Vector3(endGoal[0], endGoal[1], endGoal[2])) <
+      3
+    ) {
+      setMode(GameModes.WIN);
     }
   });
 
