@@ -1,11 +1,10 @@
 import { useEffect, useRef } from "react";
-import { useKeyboard } from "./controls/useControls";
+import { useKeyboard } from "./useKeyboard";
 import { Triplet, useSphere } from "@react-three/cannon";
 import { Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { OrbitControls as OB } from "three-stdlib";
-import App from "next/app";
 import { GameModes, useGameStore } from "@/stores/gameStore";
 
 const direction = new Vector3();
